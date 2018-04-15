@@ -2,11 +2,11 @@ Ember applications utilize the [dependency injection](https://en.wikipedia.org/w
 ("DI") design pattern to declare and instantiate classes of objects and dependencies between them.
 Applications and application instances each serve a role in Ember's DI implementation.
 
-An [`Application`](https://emberjs.com/api/ember/2.16/classes/Application) serves as a "registry" for dependency declarations.
+An [`Application`](https://emberjs.com/api/ember/release/classes/Application) serves as a "registry" for dependency declarations.
 Factories (i.e. classes) are registered with an application,
 as well as rules about "injecting" dependencies that are applied when objects are instantiated.
 
-An [`ApplicationInstance`](https://emberjs.com/api/ember/2.16/classes/ApplicationInstance) serves as the "owner" for objects that are instantiated from registered factories.
+An [`ApplicationInstance`](https://emberjs.com/api/ember/release/classes/ApplicationInstance) serves as the "owner" for objects that are instantiated from registered factories.
 Application instances provide a means to "look up" (i.e. instantiate and / or retrieve) objects.
 
 > _Note: Although an `Application` serves as the primary registry for an app,
@@ -36,7 +36,7 @@ or application instance initializers (with the former being much more common).
 For example, an application initializer could register a `Logger` factory with the key `logger:main`:
 
 ```app/initializers/logger.js
-import EmberObject from "@ember/object";
+import EmberObject from '@ember/object';
 
 export function initialize(application) {
   let Logger = EmberObject.extend({
@@ -92,7 +92,7 @@ register your factories as non-singletons using the `singleton: false` option.
 In the following example, the `Message` class is registered as a non-singleton:
 
 ```app/initializers/notification.js
-import EmberObject from "@ember/object";
+import EmberObject from '@ember/object';
 
 export function initialize(application) {
   let Message = EmberObject.extend({
@@ -115,7 +115,7 @@ Once a factory is registered, it can be "injected" where it is needed.
 Factories can be injected into whole "types" of factories with *type injections*. For example:
 
 ```app/initializers/logger.js
-import EmberObject from "@ember/object";
+import EmberObject from '@ember/object';
 
 export function initialize(application) {
   let Logger = EmberObject.extend({
@@ -141,7 +141,7 @@ The value of `logger` will come from the factory named `logger:main`.
 Routes in this example application can now access the injected logger:
 
 ```app/routes/index.js
-import Route from "@ember/routing/route";
+import Route from '@ember/routing/route';
 
 export default Route.extend({
   activate() {
@@ -172,7 +172,7 @@ The following code injects the `shopping-cart` service on the `cart-contents` co
 
 ```app/components/cart-contents.js
 import Component from '@ember/component';
-import { inject as service } from "@ember/service";
+import { inject as service } from '@ember/service';
 
 export default Component.extend({
   cart: service('shopping-cart')
@@ -184,7 +184,7 @@ simply leave off the service name (the dasherized version of the name will be us
 
 ```app/components/cart-contents.js
 import Component from '@ember/component';
-import { inject as service } from "@ember/service";
+import { inject as service } from '@ember/service';
 
 export default Component.extend({
   shoppingCart: service()
@@ -194,7 +194,7 @@ export default Component.extend({
 ## Factory Instance Lookups
 
 To fetch an instantiated factory from the running application you can call the
-[`lookup`](https://emberjs.com/api/ember/2.16/classes/ApplicationInstance/methods/lookup?anchor=lookup) method on an application instance. This method takes a string
+[`lookup`](https://emberjs.com/api/ember/release/classes/ApplicationInstance/methods/lookup?anchor=lookup) method on an application instance. This method takes a string
 to identify a factory and returns the appropriate object.
 
 ```javascript
@@ -225,9 +225,9 @@ export default {
 
 ### Getting an Application Instance from a Factory Instance
 
-[`Ember.getOwner`](https://emberjs.com/api/ember/2.16/classes/@ember%2Fapplication/methods/getOwner?anchor=getOwner) will retrieve the application instance that "owns" an
+[`Ember.getOwner`](https://emberjs.com/api/ember/release/classes/@ember%2Fapplication/methods/getOwner?anchor=getOwner) will retrieve the application instance that "owns" an
 object. This means that framework objects like components, helpers, and routes
-can use [`Ember.getOwner`](https://emberjs.com/api/ember/2.16/classes/@ember%2Fapplication/methods/getOwner?anchor=getOwner) to perform lookups through their application
+can use [`Ember.getOwner`](https://emberjs.com/api/ember/release/classes/@ember%2Fapplication/methods/getOwner?anchor=getOwner) to perform lookups through their application
 instance at runtime.
 
 For example, this component plays songs with different audio services based
@@ -235,12 +235,12 @@ on a song's `audioType`.
 
 ```app/components/play-audio.js
 import Component from '@ember/component';
-import { computed } from "@ember/object";
-import { getOwner } from "@ember/application";
+import { computed } from '@ember/object';
+import { getOwner } from '@ember/application';
 
 // Usage:
 //
-//   {{play-audio song=song}}
+// {{play-audio song=song}}
 //
 export default Component.extend({
   audioService: computed('song.audioType', function() {

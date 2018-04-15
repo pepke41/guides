@@ -41,10 +41,12 @@ camelize
 chainable
 checkbox
 checkboxes
+cjs
 cli
 cli's
-codebase
 clickable
+codebase
+CommonJS
 componentized
 concat
 config
@@ -64,6 +66,7 @@ datepicker
 de
 debounce
 deletedelete
+deps
 dependenciesnode
 deprecations
 deserialization
@@ -196,6 +199,7 @@ poppopobject
 popups
 postgresql
 pre
+precompile
 preload
 prepend
 preprocessing
@@ -203,6 +207,7 @@ promise's
 prs
 pseudocode
 pushpushobject
+querySelectorAll
 qunit
 readme
 readonly
@@ -216,11 +221,13 @@ rerendering
 restadapter
 reversereverseobjects
 rewriteguide
+rollup
 routinglog
 rsvp
 runloop
 runloops
 runtime
+rwjblue
 sandboxed
 scp
 selectiondirection

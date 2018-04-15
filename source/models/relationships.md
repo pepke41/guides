@@ -173,6 +173,8 @@ import { computed } from '@ember/object';
 import PaymentMethod from './payment-method';
 
 export default PaymentMethod.extend({
+  last4: DS.attr(),
+
   obfuscatedIdentifier: computed('last4', function () {
     return `**** **** **** ${this.get('last4')}`;
   })
@@ -209,32 +211,32 @@ And our API might setup these relationships like so:
 			"payment-methods": {
 				"data": [{
 					"id": "1",
-					"type": "PaymentMethodPaypal"
+					"type": "payment-method-paypal"
 				}, {
 					"id": "2",
-					"type": "PaymentMethodCc"
+					"type": "payment-method-cc"
 				}, {
 					"id": "3",
-					"type": "PaymentMethodApplePay"
+					"type": "payment-method-apple-pay"
 				}]
 			}
 		}
 	},
 	"included": [{
 		"id": "1",
-		"type": "PaymentMethodPaypal",
+		"type": "payment-method-paypal",
 		"attributes": {
 			"linked-email": "ryan@gosling.io"
 		}
 	}, {
 		"id": "2",
-		"type": "PaymentMethodCc",
+		"type": "payment-method-cc",
 		"attributes": {
 			"last4": "1335"
 		}
 	}, {
 		"id": "3",
-		"type": "PaymentMethodApplePay",
+		"type": "payment-method-apple-pay",
 		"attributes": {
 			"last4": "5513"
 		}
@@ -257,7 +259,7 @@ extraneous models.
 
 ### Creating Records
 
-Let's assume that we have a `blog-post` and a `comment` model, which are related to each other as follows:
+Let's assume that we have a `blog-post` and a `comment` model. A single blog post can have several comments linked to it. The correct relationship is shown below:
 
 ```app/models/blog-post.js
 import DS from 'ember-data';
@@ -275,31 +277,37 @@ export default DS.Model.extend({
 });
 ```
 
-When a user comments on a blogPost, we need to create a relationship between the two records. We can simply set the `belongsTo` relationship in our new comment:
+Now, suppose we want to add comments to an existing blogPost. We can do this in two ways, but for both of them, we first need to look up a blog post that is already loaded in the store, using its id:
 
 ```javascript
-let blogPost = this.get('store').peekRecord('blog-post', 1);
+let myBlogPost = this.get('store').peekRecord('blog-post', 1);
+```
+Now we can either set the `belongsTo` relationship in our new comment, or, update the blogPost's `hasMany` relationship. As you might observe, we don't need to set both `hasMany` and `belongsTo` for a record. Ember Data will do that for us.
+
+First, let's look at setting the `belongsTo` relationship in our new comment:
+
+```javascript
 let comment = this.get('store').createRecord('comment', {
-  blogPost: blogPost
+  blogPost: myBlogPost
 });
 comment.save();
 ```
 
-This will create a new `comment` record and save it to the server. Ember Data will also update the blogPost to include our newly created comment in its `comments` relationship.
+In the above snippet, we have referenced `myBlogPost` while creating the record. This will let Ember know that the newly created comment belongs to `myBlogPost`.
+This will create a new `comment` record and save it to the server. Ember Data will also update `myBlogPost` to include our newly created comment in its `comments` relationship.
 
-We could have also linked the two records together by updating the blogPost's `hasMany` relationship:
+The second way of doing the same thing is to link the two records together by updating the blogPost's `hasMany` relationship as shown below:
 
 ```javascript
-let blogPost = this.get('store').peekRecord('blog-post', 1);
 let comment = this.get('store').createRecord('comment', {
 });
-blogPost.get('comments').pushObject(comment);
+myBlogPost.get('comments').pushObject(comment);
 comment.save().then(function () {
-  blogPost.save();
+  myBlogPost.save();
 });
 ```
 
-In this case the new comment's `belongsTo` relationship will be set to the parent blogPost.
+In this above case, the new comment's `belongsTo` relationship will be automatically set to the parent blogPost.
 
 Although `createRecord` is fairly straightforward, the only thing to watch out for
 is that you cannot assign a promise as a relationship, currently.
@@ -340,7 +348,7 @@ include those related records in the response returned to the client.
 The value of the parameter should be a comma-separated list of names of the
 relationships required.
 
-If you are using an adapter that supports JSON API, such as Ember's default [`JSONAPIAdapter`](https://www.emberjs.com/api/ember-data/2.16/classes/DS.JSONAPIAdapter),
+If you are using an adapter that supports JSON API, such as Ember's default [`JSONAPIAdapter`](https://www.emberjs.com/api/ember-data/release/classes/DS.JSONAPIAdapter),
 you can easily add the `include` parameter to the server requests created by
 the `findRecord()`, `findAll()`,
 `query()` and `queryRecord()` methods.

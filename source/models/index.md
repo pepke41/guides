@@ -115,8 +115,8 @@ export default Component.extend({
 ```
 
 ```app/templates/components/drafts-button.hbs
-{{#link-to 'drafts' tagName="button"}}
-Drafts ({{drafts.length}})
+{{#link-to "drafts" tagName="button"}}
+  Drafts ({{drafts.length}})
 {{/link-to}}
 ```
 
@@ -139,13 +139,13 @@ presenting model data to the user, not fetching the model.
 
 Good Ember apps take a different approach. Ember Data gives you a single
 **store** that is the central repository of models in your application.
-Components and routes can ask the store for models, and the store is
+Routes and their corresponding controllers can ask the store for models, and the store is
 responsible for knowing how to fetch them.
 
 It also means that the store can detect that two different components
 are asking for the same model, allowing your app to only fetch the data
 from the server once. You can think of the store as a read-through cache
-for your app's models. Both your components and routes have access to
+for your app's models. Both routes and their corresponding controllers have access to
 this shared store; when they need to display or modify a model, they
 first ask the store for it.
 
@@ -156,7 +156,7 @@ maintain by relying on Ember's conventions. Since these conventions
 will be shared among developers on your team, following them leads
 to code that is easier to maintain and understand.
 
-Rather than create an arbitrary set of conventions, Ember Data is
+Rather than creating an arbitrary set of conventions, Ember Data is
 designed to work out of the box with [JSON API][json-api]. JSON API is a
 formal specification for building conventional, robust, and performant
 APIs that allow clients and servers to communicate model data.
@@ -314,7 +314,7 @@ _asynchronous_ request to the server, and only when that request finishes
 loading can the record be created with its backing data.
 
 Because of this asynchronicity, the store immediately returns a
-_promise_ from the `find()` method. Similarly, any requests that the
+_promise_ from the `findRecord()` method. Similarly, any requests that the
 store makes to the adapter also return promises.
 
 Once the request to the server returns with a JSON payload for the

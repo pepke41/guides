@@ -28,7 +28,7 @@ and [working with records](../creating-updating-and-deleting-records) of that ty
 ## Defining Attributes
 
 The `person` model we generated earlier didn't have any attributes. Let's
-add first and last name, as well as the birthday, using [`DS.attr`](https://www.emberjs.com/api/ember-data/2.16/classes/DS/methods/attr?anchor=attr):
+add first and last name, as well as the birthday, using [`DS.attr`](https://www.emberjs.com/api/ember-data/release/classes/DS/methods/attr?anchor=attr):
 
 ```app/models/person.js
 import DS from 'ember-data';
@@ -112,11 +112,11 @@ Here is a simple transform that converts values between cents and US dollars.
 import DS from 'ember-data';
 
 export default DS.Transform.extend({
-  deserialize: function(serialized) {
+  deserialize(serialized) {
     return serialized / 100; // returns dollars
   },
 
-  serialize: function(deserialized) {
+  serialize(deserialized) {
     return deserialized * 100; // returns cents
   }
 });

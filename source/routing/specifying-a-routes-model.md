@@ -9,7 +9,7 @@ Router.map(function() {
 });
 ```
 
-To load a model for the `favorite-posts` route, you would use the [`model()`](https://www.emberjs.com/api/ember/2.16/classes/Route/methods/model?anchor=model)
+To load a model for the `favorite-posts` route, you would use the [`model()`](https://www.emberjs.com/api/ember/release/classes/Route/methods/model?anchor=model)
 hook in the `favorite-posts` route handler:
 
 ```app/routes/favorite-posts.js
@@ -22,7 +22,7 @@ export default Route.extend({
 });
 ```
 
-Typically, the `model` hook should return an [Ember Data](../../models/) record,
+Typically, the `model` [hook](../../getting-started/core-concepts/#toc_hooks) should return an [Ember Data](../../models/) record,
 but it can also return any [promise](https://www.promisejs.org/) object (Ember Data records are promises),
 or a plain JavaScript object or array.
 Ember will wait until the data finishes loading (until the promise is resolved) before rendering the template.
@@ -96,7 +96,7 @@ was passed a model):
 <h1>Photos</h1>
 {{#each model as |photo|}}
   <p>
-    {{#link-to 'photo' photo}}
+    {{#link-to "photo" photo}}
       <img src="{{photo.thumbnailUrl}}" alt="{{photo.title}}" />
     {{/link-to}}
   </p>
@@ -110,7 +110,7 @@ identifier, instead):
 <h1>Photos</h1>
 {{#each model as |photo|}}
   <p>
-    {{#link-to 'photo' photo.id}}
+    {{#link-to "photo" photo.id}}
       <img src="{{photo.thumbnailUrl}}" alt="{{photo.title}}" />
     {{/link-to}}
   </p>
@@ -122,10 +122,9 @@ Routes without dynamic segments will always execute the model hook.
 ## Multiple Models
 
 Multiple models can be returned through an
-[RSVP.hash](https://www.emberjs.com/api/ember/2.16/classes/rsvp/methods/hash?anchor=hash).
-The `RSVP.hash` takes
-parameters that return promises, and when all parameter promises resolve, then
-the `RSVP.hash` promise resolves. For example:
+[RSVP.hash](https://www.emberjs.com/api/ember/release/classes/rsvp/methods/hash?anchor=hash).
+The `RSVP.hash` method takes an object with promises or values as properties as an argument, and returns a single promise.
+When all of the promises in the object resolve, the returned promise will resolve with an object of all of the promise values. For example:
 
 ```app/routes/songs.js
 import Route from '@ember/routing/route';

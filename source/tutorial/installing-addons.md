@@ -11,7 +11,6 @@ Instead of having you copy/paste in CSS to style Super Rentals, we've created an
 The addon works by generating a file called `ember-tutorial.css` and putting that file in the super-rentals `vendor` directory.
 
 The [`vendor` directory](../../addons-and-dependencies/managing-dependencies/#toc_other-assets) in Ember is a special directory where you can include content that gets compiled into your application.
-When Ember CLI builds our app from our source code, it copies `ember-tutorial.css` into a file called `vendor.css`.
 
 As Ember CLI runs, it takes the `ember-tutorial` CSS file and puts it in a file called `vendor.css`.
 The `vendor.css` file is referenced in `app/index.html`, making the styles available at runtime.
@@ -24,6 +23,16 @@ Run the following command to install the addon:
 ember install ember-cli-tutorial-style
 ```
 
+Here is the output:
+
+```shell
+NPM: Installed ember-cli-tutorial-style
+installing ember-cli-tutorial-style
+  create public/assets/images/teaching.png
+  create vendor/ember-tutorial.css
+Installed addon package.
+```
+
 Since Ember addons are npm packages, `ember install` installs them in the `node_modules` directory, and makes an entry
 in `package.json`. Be sure to restart your server after the addon has installed successfully. Restarting the server will
 incorporate the new CSS and refreshing the browser window will give you this:
@@ -32,7 +41,7 @@ incorporate the new CSS and refreshing the browser window will give you this:
 
 ### ember-cli-mirage
 
-[Mirage](http://www.ember-cli-mirage.com/) is a client HTTP stubbing library often used for Ember acceptance testing.
+[Mirage](http://www.ember-cli-mirage.com/) is a client HTTP stubbing library often used for Ember application testing.
 For the case of this tutorial, we'll use mirage as our source of data rather than a traditional backend server.
 Mirage will allow us to create fake data to work with while developing our app and mimic an API.
 The data and endpoints we setup here will come into play later in the tutorial, when we use Ember Data to make server requests.
@@ -60,7 +69,7 @@ export default function() {
           title: 'Grand Old Mansion',
           owner: 'Veruca Salt',
           city: 'San Francisco',
-          "property-type": 'Estate',
+          category: 'Estate',
           bedrooms: 15,
           image: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg'
         }
@@ -71,7 +80,7 @@ export default function() {
           title: 'Urban Living',
           owner: 'Mike Teavee',
           city: 'Seattle',
-          "property-type": 'Condo',
+          category: 'Condo',
           bedrooms: 1,
           image: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Alfonso_13_Highrise_Tegucigalpa.jpg'
         }
@@ -82,7 +91,7 @@ export default function() {
           title: 'Downtown Charm',
           owner: 'Violet Beauregarde',
           city: 'Portland',
-          "property-type": 'Apartment',
+          category: 'Apartment',
           bedrooms: 3,
           image: 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Wheeldon_Apartment_Building_-_Portland_Oregon.jpg'
         }
@@ -133,7 +142,7 @@ For now, let's generate an adapter for our application:
 ember generate adapter application
 ```
 
-This adapter will extend the [`JSONAPIAdapter`](https://www.emberjs.com/api/ember-data/2.16/classes/DS.JSONAPIAdapter) base class from Ember Data:
+This adapter will extend the [`JSONAPIAdapter`](https://www.emberjs.com/api/ember-data/release/classes/DS.JSONAPIAdapter) base class from Ember Data:
 
 ```app/adapters/application.js{+4}
 import DS from 'ember-data';
@@ -143,6 +152,6 @@ export default DS.JSONAPIAdapter.extend({
 });
 ```
 
-If you were running `ember serve` in another shell, restart the server to include Mirage in your build.
+If you were running `ember serve` or `ember test --serve` in another shell, restart each of those servers to include Mirage in your build.
 
 Note that at this point of the tutorial, the data is still provided by the `app/routes/rentals.js` file. We will make use of the mirage data we set up here in the upcoming section called [Using Ember Data](../ember-data/).

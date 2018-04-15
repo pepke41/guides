@@ -38,7 +38,7 @@ This can be done on the result of a `store.query()` call:
 ```js
 store.query('post').then((result) => {
   let meta = result.get('meta');
-})
+});
 ```
 
 On a belongsTo relationship:
@@ -70,14 +70,13 @@ import Router from '@ember/routing/route';
 
 export default Route.extend({
   model() {
-    return this.store.findAll('user').then((results) => {
+    return this.store.query('user', {}).then((results) => {
       return {
         users: results,
         meta: results.get('meta')
       };
     });
   },
-  
   setupController(controller, { users, meta }) {
     this._super(controller, users);
     controller.set('meta', meta);

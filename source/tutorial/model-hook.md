@@ -11,13 +11,13 @@ Here's what our homepage will look like when we're done:
 ![super rentals homepage with rentals list](../../images/model-hook/super-rentals-index-with-list.png)
 
 In Ember, route handlers are responsible for loading the model with data for the page.
-It loads the data in a function called [`model`](https://www.emberjs.com/api/ember/2.16/classes/Route/methods/model?anchor=model).
-The `model` function acts as a **hook**, meaning that Ember will call it for us during different times in our app.
+It loads the data in a function called [`model`](https://www.emberjs.com/api/ember/release/classes/Route/methods/model?anchor=model).
+The `model` function acts as a [hook](../../getting-started/core-concepts/#toc_hooks), meaning that Ember will call it for us during different times in our app.
 The model function we've added to our `rentals` route handler will be called when a user navigates to the rentals route via root URL `http://localhost:4200`, or via `http://localhost:4200/rentals`.
 
 Let's open `app/routes/rentals.js` and return an array of rental objects from the `model` function:
 
-```app/routes/rentals.js{+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,+16,+17,+18,+19,+20,+21,+22,+23,+24,+25,+26,+27,+28,+29,+30,+31,+32,+33,+34,+35}
+```app/routes/rentals.js{+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,+16,+17,+18,+19,+20,+21,+22,+23,+24,+25,+26,+27,+28,+29,+30,+31,+32,+33}
 import Route from '@ember/routing/route';
 
 export default Route.extend({
@@ -27,7 +27,7 @@ export default Route.extend({
       title: 'Grand Old Mansion',
       owner: 'Veruca Salt',
       city: 'San Francisco',
-      propertyType: 'Estate',
+      category: 'Estate',
       bedrooms: 15,
       image: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg',
       description: 'This grand old mansion sits on over 100 acres of rolling hills and dense redwood forests.'
@@ -36,21 +36,19 @@ export default Route.extend({
       title: 'Urban Living',
       owner: 'Mike TV',
       city: 'Seattle',
-      propertyType: 'Condo',
+      category: 'Condo',
       bedrooms: 1,
       image: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Alfonso_13_Highrise_Tegucigalpa.jpg',
       description: 'A commuters dream. This rental is within walking distance of 2 bus stops and the Metro.'
-
     }, {
       id: 'downtown-charm',
       title: 'Downtown Charm',
       owner: 'Violet Beauregarde',
       city: 'Portland',
-      propertyType: 'Apartment',
+      category: 'Apartment',
       bedrooms: 3,
       image: 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Wheeldon_Apartment_Building_-_Portland_Oregon.jpg',
       description: 'Convenience is at your doorstep with this charming downtown rental. Great restaurants and active night life are within a few feet.'
-
     }];
   }
 });
@@ -73,7 +71,7 @@ This helper will let us loop through each of the rental objects in our model:
   <p>
     We hope you find exactly what you're looking for in a place to stay.
   </p>
-  {{#link-to 'about' class="button"}}
+  {{#link-to "about" class="button"}}
     About Us
   {{/link-to}}
 </div>
@@ -85,7 +83,7 @@ This helper will let us loop through each of the rental objects in our model:
       <span>Owner:</span> {{rental.owner}}
     </div>
     <div class="detail type">
-      <span>Type:</span> {{rental.propertyType}}
+      <span>Type:</span> {{rental.category}}
     </div>
     <div class="detail location">
       <span>Location:</span> {{rental.city}}
@@ -103,29 +101,36 @@ From the rental variable in each step, we create a listing with information abou
 
 You may move onto the [next page](../installing-addons/) to keep implementing new features, or continue reading on testing the app you've created.
 
-### Acceptance Testing the Rental List
+### Application Testing the Rental List
 
 To check that rentals are listed with an automated test, we will create a test to visit the index route and check that the results show 3 listings.
 
 In `app/templates/rentals.hbs`, we wrapped each rental display in an `article` element, and gave it a class called `listing`.
 We will use the listing class to find out how many rentals are shown on the page.
 
-To find the elements that have a class called `listing`, we'll use a test helper called [find](http://emberjs.com/api/classes/Ember.Test.html#method_find).
-The `find` function returns the elements that match the given [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors).
+
+To find the elements that have a class called `listing`, we'll use the method [`querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelectorAll).
+The `querySelectorAll` method returns the elements that match the given [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors).
 In this case it will return an array of all the elements with a class called `listing`.
 
-```/tests/acceptance/list-rentals-test.js{+2,+3,+4,+5}
-test('should list available rentals.', function (assert) {
-  visit('/');
-  andThen(function() {
-    assert.equal(find('.listing').length, 3, 'should see 3 listings');
-  });
+```/tests/acceptance/list-rentals-test.js{+4}
+import {
+  click,
+  currentURL,
+  visit
+} from '@ember/test-helpers'
+```
+
+```/tests/acceptance/list-rentals-test.js{+2,+3}
+test('should list available rentals.', async function(assert) {
+  await visit('/');
+  assert.equal(this.element.querySelectorAll('.listing').length, 3, 'should display 3 listings');
 });
 ```
 
 Run the tests again using the command `ember t -s`, and toggle "Hide passed tests" to show your new passing test.
 
-Now we are listing rentals, and verifying it with an acceptance test.
-This leaves us with 2 remaining acceptance test failures (and 1 eslint failure):
+Now we are listing rentals, and verifying it with an application test.
+This leaves us with 2 remaining application test failures (and 1 eslint failure):
 
 ![list rentals test passing](../../images/model-hook/model-hook.png)

@@ -8,7 +8,7 @@ heavy use of the concept of Promises. In short, promises are objects that
 represent an eventual value. A promise can either _fulfill_
 (successfully resolve the value) or _reject_ (fail to resolve the
 value). The way to retrieve this eventual value, or handle the cases
-when the promise rejects, is via the promise's [`then()`](https://www.emberjs.com/api/ember/2.16/classes/Promise/methods/then?anchor=then) method, which
+when the promise rejects, is via the promise's [`then()`](https://www.emberjs.com/api/ember/release/classes/Promise/methods/then?anchor=then) method, which
 accepts two optional callbacks, one for fulfillment and one for
 rejection. If the promise fulfills, the fulfillment handler gets called
 with the fulfilled value as its sole argument, and if the promise rejects,
@@ -74,20 +74,21 @@ defined on it to be a promise.
 If the promise fulfills, the transition will pick up where it left off and
 begin resolving the next (child) route's model, pausing if it too is a
 promise, and so on, until all destination route models have been
-resolved. The values passed to the [`setupController()`](https://www.emberjs.com/api/ember/2.16/classes/Route/methods/setupController?anchor=setupController) hook for each route
+resolved. The values passed to the [`setupController()`](https://www.emberjs.com/api/ember/release/classes/Route/methods/setupController?anchor=setupController) hook for each route
 will be the fulfilled values from the promises.
 
 
 A basic example:
 
 ```app/routes/tardy.js
-import Ember from 'ember';
+import Route from '@ember/routing/route';
 import RSVP from 'rsvp';
+import { later } from '@ember/runloop';
 
-export default Ember.Route.extend({
+export default Route.extend({
   model() {
     return new RSVP.Promise(function(resolve) {
-      Ember.run.later(function() {
+      later(function() {
         resolve({ msg: 'Hold Your Horses' });
       }, 3000);
     });
@@ -124,10 +125,10 @@ default error handler unless it is handled by a custom error handler
 along the way, e.g.:
 
 ```app/routes/good-for-nothing.js
-import Ember from 'ember';
+import Route from '@ember/routing/route';
 import RSVP from 'rsvp';
 
-export default Ember.Route.extend({
+export default Route.extend({
   model() {
     return RSVP.reject("FAIL");
   },
@@ -158,9 +159,9 @@ you can catch promise rejects within the `model` hook itself and convert
 them into fulfills that won't halt the transition.
 
 ```app/routes/funky.js
-import Ember from 'ember';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
   model() {
     return iHopeThisWorks().catch(function() {
       // Promise rejected, fulfill with some default value to

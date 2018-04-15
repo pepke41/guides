@@ -1,6 +1,10 @@
 The Ember Router allows you to provide feedback that a route is loading, as well
 as when an error occurs in loading a route.
 
+The `error` and `loading` substates exist as a part of each route, so they
+should not be added to your `router.js` file. To utilize a substate, the route, controller,
+and template may be optionally defined as desired.
+
 ## `loading` substates
 
 During the `beforeModel`, `model`, and `afterModel` hooks, data may take some
@@ -16,7 +20,7 @@ Router.map(function() {
 ```
 
 ```app/routes/slow-model.js
-import Route from '@ember/routing/router';
+import Route from '@ember/routing/route';
 
 export default Route.extend({
   model() {
@@ -84,7 +88,7 @@ It's important to note that `foo.bar.loading` is not considered now.
 ### The `loading` event
 
 If the various `beforeModel`/`model`/`afterModel` hooks
-don't immediately resolve, a [`loading`](https://www.emberjs.com/api/ember/2.16/classes/Route/events/loading?anchor=loading) event will be fired on that route.
+don't immediately resolve, a [`loading`](https://www.emberjs.com/api/ember/release/classes/Route/events/loading?anchor=loading) event will be fired on that route.
 
 ```app/routes/foo-slow-model.js
 import Route from '@ember/routing/route';
@@ -133,9 +137,9 @@ In case we want both custom logic and the default behaviour for the loading subs
 we can implement the `loading` action and let it bubble by returning `true`.
 
 ```app/routes/foo-slow-model.js
-import Ember from 'ember';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
   ...
   actions: {
     loading(transition) {
@@ -187,7 +191,7 @@ called with the `error` as the model. See example below:
 
 ```js
 setupController(controller, error) {
-  Ember.Logger.debug(error.message);
+  console.log(error.message);
   this._super(...arguments);
 }
 ```
@@ -199,7 +203,7 @@ logged.
 
 If the `articles.overview` route's `model` hook returns a promise that rejects
 (for instance the server returned an error, the user isn't logged in,
-etc.), an [`error`](https://www.emberjs.com/api/ember/2.16/classes/Route/events/error?anchor=error) event will fire from that route and bubble upward.
+etc.), an [`error`](https://www.emberjs.com/api/ember/release/classes/Route/events/error?anchor=error) event will fire from that route and bubble upward.
 This `error` event can be handled and used to display an error message,
 redirect to a login page, etc.
 
@@ -231,9 +235,9 @@ In case we want to run some custom logic and have the default behaviour of rende
 we can handle the `error` event and let it bubble by returning `true`.
 
 ```app/routes/articles-overview.js
-import Ember from 'ember';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
   model(params) {
     return this.get('store').findAll('privileged-model');
   },

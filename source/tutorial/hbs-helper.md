@@ -30,7 +30,7 @@ export function rentalPropertyType(params/*, hash*/) {
 export default helper(rentalPropertyType);
 ```
 
-Let's update our `rental-listing` component template to use our new helper and pass in `rental.propertyType`:
+Let's update our `rental-listing` component template to use our new helper and pass in `rental.category`:
 
 ```app/templates/components/rental-listing.hbs{-11,+12,+13}
 <article class="listing">
@@ -43,9 +43,9 @@ Let's update our `rental-listing` component template to use our new helper and p
     <span>Owner:</span> {{rental.owner}}
   </div>
   <div class="detail type">
-    <span>Type:</span> {{rental.propertyType}}
-    <span>Type:</span> {{rental-property-type rental.propertyType}}
-      - {{rental.propertyType}}
+    <span>Type:</span> {{rental.category}}
+    <span>Type:</span> {{rental-property-type rental.category}}
+      - {{rental.category}}
   </div>
   <div class="detail location">
     <span>Location:</span> {{rental.city}}
@@ -57,11 +57,11 @@ Let's update our `rental-listing` component template to use our new helper and p
 ```
 
 Ideally we'll see "Type: Standalone - Estate" for our first rental property.
-Instead, our default template helper is returning back our `rental.propertyType` values.
+Instead, our default template helper is returning back our `rental.category` values.
 Let's update our helper to look if a property exists in an array of `communityPropertyTypes`,
 if so, we'll return either `'Community'` or `'Standalone'`:
 
-```app/helpers/rental-property-type.js{-3,-4,-5,+7,+8,+9,+10,+11,+13,+14,+15,+16,+17,+18,+19}
+```app/helpers/rental-property-type.js{-3,-4,-5,+7,+8,+9,+10,+11,+13,+14,+15,+16,+18,+19}
 import { helper } from '@ember/component/helper';
 
 export function rentalPropertyType(params/*, hash*/) {
@@ -95,23 +95,33 @@ while the other two are listed as "Community".
 
 Update the content of the integration test to the following to fix it:
 
-```/tests/integration/helpers/rental-property-type-test.js{-15,+16}
-
-import { moduleForComponent, test } from 'ember-qunit';
+```/tests/integration/helpers/rental-property-type-test.js{-10,-11,-17,+12,+13,+18,+21,+22,+23,+24,+25,+26,+27}
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('rental-property-type', 'helper:rental-property-type', {
-  integration: true
+module('Integration | Helper | my-helper', function(hooks) {
+  setupRenderingTest(hooks);
+
+  // Replace this with your real tests.
+  test('it renders', async function(assert) {
+    this.set('inputValue', '1234');
+  test('it renders correctly for a Standalone rental', async function(assert) {
+    this.set('inputValue', 'Estate');
+
+    await render(hbs`{{rental-property-type inputValue}}`);
+
+    assert.equal(this.element.textContent.trim(), '1234');
+    assert.equal(this.element.textContent.trim(), 'Standalone');
+  });
+
+  test('it renders correctly for a Community rental', async function(assert) {
+    this.set('inputValue', 'Apartment');
+
+    await render(hbs`{{rental-property-type inputValue}}`);
+
+    assert.equal(this.element.textContent.trim(), 'Community');
+  });
 });
-
-// Replace this with your real tests.
-test('it renders', function(assert) {
-  this.set('inputValue', '1234');
-
-  this.render(hbs`{{rental-property-type inputValue}}`);
-
-  assert.equal(this.$().text().trim(), '1234');
-  assert.equal(this.$().text().trim(), 'Standalone');
-});
-
 ```

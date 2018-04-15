@@ -6,7 +6,7 @@ Up to this point, we've generated four top level routes.
 * The `index` route, which we've set up to redirect to the `rentals` route.
 
 Our `rentals` route is going to serve multiple functions.
-From our [acceptance tests](../acceptance-test), we've shown that we want our users to be able to browse and search rentals, as well as see detailed information for individual rentals.
+From our [application tests](../acceptance-test), we've shown that we want our users to be able to browse and search rentals, as well as see detailed information for individual rentals.
 To satisfy that requirement, we are going to make use of Ember's [nested route capability](../../routing/defining-your-routes/#toc_nested-routes).
 
 By the end of this section we want to have created the following new routes:
@@ -29,15 +29,15 @@ This is where the active nested route will be rendered.
   <div class="right tomster"></div>
   <h2>Welcome!</h2>
   <p>We hope you find exactly what you're looking for in a place to stay.</p>
-  {{#link-to 'about' class="button"}}
+  {{#link-to "about" class="button"}}
     About Us
   {{/link-to}}
 </div>
 {{#list-filter
    filter=(action 'filterByCity')
-   as |rentals|}}
+   as |filteredResults|}}
   <ul class="results">
-    {{#each rentals as |rentalUnit|}}
+    {{#each filteredResults as |rentalUnit|}}
       <li>{{rental-listing rental=rentalUnit}}</li>
     {{/each}}
   </ul>
@@ -106,15 +106,15 @@ Now that we are returning all of our rentals to the nested route's model, we wil
   <div class="right tomster"></div>
   <h2>Welcome!</h2>
   <p>We hope you find exactly what you're looking for in a place to stay.</p>
-  {{#link-to 'about' class="button"}}
+  {{#link-to "about" class="button"}}
     About Us
   {{/link-to}}
 </div>
 {{#list-filter
    filter=(action 'filterByCity')
-   as |rentals|}}
+   as |filteredResults|}}
   <ul class="results">
-    {{#each rentals as |rentalUnit|}}
+    {{#each filteredResults as |rentalUnit|}}
       <li>{{rental-listing rental=rentalUnit}}</li>
     {{/each}}
   </ul>
@@ -125,9 +125,9 @@ Now that we are returning all of our rentals to the nested route's model, we wil
 ```app/templates/rentals/index.hbs{+1,+2,+3,+4,+5,+6,+7,+8,+9}
 {{#list-filter
    filter=(action 'filterByCity')
-   as |rentals|}}
+   as |filteredResults|}}
   <ul class="results">
-    {{#each rentals as |rentalUnit|}}
+    {{#each filteredResults as |rentalUnit|}}
       <li>{{rental-listing rental=rentalUnit}}</li>
     {{/each}}
   </ul>
@@ -137,13 +137,20 @@ Now that we are returning all of our rentals to the nested route's model, we wil
 
 Finally, we need to make our controller that has our filter action available to the new nested index route.
 
-Start by running `ember g controller rentals/index` to create an index controller for our nested route.
+Start by running the following command to create an index controller for our nested route:
+
+```shell
+ember g controller rentals/index
+```
 
 Instead of copying the whole controller file over to `app/controllers/rentals/index.js` from `app/controllers/rentals.js`, we'll just take advantage of JavaScript's import/export feature to re-export the rentals controller as the rentals/index controller:
 
-```app/controllers/rentals/index.js
+```app/controllers/rentals/index.js{-1,+2,-4,-5,+6}
+import Controller from '@ember/controller';
 import RentalsController from '../rentals';
 
+export default Controller.extend({
+});
 export default RentalsController;
 ```
 
@@ -172,7 +179,7 @@ export default function() {
         title: "Grand Old Mansion",
         owner: "Veruca Salt",
         city: "San Francisco",
-        "property-type": "Estate",
+        category: "Estate",
         bedrooms: 15,
         image: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg",
         description: "This grand old mansion sits on over 100 acres of rolling hills and dense redwood forests."
@@ -185,7 +192,7 @@ export default function() {
         title: "Urban Living",
         owner: "Mike Teavee",
         city: "Seattle",
-        "property-type": "Condo",
+        category: "Condo",
         bedrooms: 1,
         image: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Alfonso_13_Highrise_Tegucigalpa.jpg",
         description: "A commuters dream. This rental is within walking distance of 2 bus stops and the Metro."
@@ -198,7 +205,7 @@ export default function() {
         title: "Downtown Charm",
         owner: "Violet Beauregarde",
         city: "Portland",
-        "property-type": "Apartment",
+        category: "Apartment",
         bedrooms: 3,
         image: "https://upload.wikimedia.org/wikipedia/commons/f/f7/Wheeldon_Apartment_Building_-_Portland_Oregon.jpg",
         description: "Convenience is at your doorstep with this charming downtown rental. Great restaurants and active night life are within a few feet."
@@ -266,11 +273,12 @@ We also want to simplify the URL so that it looks more like this: `localhost:420
 
 To do that, we modify our route as follows:
 
-```app/router.js{+5}
+```app/router.js{-5,+6}
 Router.map(function() {
   this.route('about');
   this.route('contact');
   this.route('rentals', function() {
+    this.route('show');
     this.route('show', { path: '/:rental_id' });
   });
 });
@@ -300,7 +308,7 @@ When we call `this.get('store').findRecord('rental', params.rental_id)`, Ember D
 
 Next, we can update the template for our show route (`app/templates/rentals/show.hbs`) and list the information for our rental.
 
-```app/templates/rentals/show.hbs
+```app/templates/rentals/show.hbs{+1,+2,+3,+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,+16,+17,+18,+19,-20}
 <div class="jumbo show-listing">
   <h2 class="title">{{model.title}}</h2>
   <div class="right detail-section">
@@ -308,7 +316,7 @@ Next, we can update the template for our show route (`app/templates/rentals/show
       <strong>Owner:</strong> {{model.owner}}
     </div>
     <div class="detail">
-      <strong>Type:</strong> {{rental-property-type model.propertyType}} - {{model.propertyType}}
+      <strong>Type:</strong> {{rental-property-type model.category}} - {{model.category}}
     </div>
     <div class="detail">
       <strong>Location:</strong> {{model.city}}
@@ -320,6 +328,7 @@ Next, we can update the template for our show route (`app/templates/rentals/show
   </div>
   <img src="{{model.image}}" class="rental-pic">
 </div>
+{{outlet}}
 ```
 
 Now browse to `localhost:4200/rentals/grand-old-mansion` and you should see the information listed for that specific rental.
@@ -330,8 +339,10 @@ Now browse to `localhost:4200/rentals/grand-old-mansion` and you should see the 
 
 Now that we can load pages for individual rentals, we'll add a link (using the `link-to` helper) within our `rental-listing` component to navigate to individual pages.
 Here, the `link-to` helper takes the route name and the rental model object as arguments.
-When you pass an object as second argument into the `link-to` block helper, it will by default [serialize](https://www.emberjs.com/api/ember/2.16/classes/Route/methods/beforeModel?anchor=serialize) the object to the ID of the model into the URL.
+When you pass an object as second argument into the `link-to` block helper, it will by default [serialize](https://www.emberjs.com/api/ember/release/classes/Route/methods/beforeModel?anchor=serialize) the object to the ID of the model into the URL.
 Alternately, you may just pass `rental.id` for clarity.
+
+Notice also that we are providing `rental.id` as the class attribute on the `link-to`.  The class name will help us find the link later on in testing.
 
 Clicking on the title will load the detail page for that rental.
 
@@ -342,13 +353,13 @@ Clicking on the title will load the detail page for that rental.
     <small>View Larger</small>
   </a>
   <h3>{{rental.title}}</h3>
-  <h3>{{#link-to "rentals.show" rental}}{{rental.title}}{{/link-to}}</h3>
+  <h3>{{#link-to "rentals.show" rental class=rental.id}}{{rental.title}}{{/link-to}}</h3>
   <div class="detail owner">
     <span>Owner:</span> {{rental.owner}}
   </div>
   <div class="detail type">
-    <span>Type:</span> {{rental-property-type rental.propertyType}}
-      - {{rental.propertyType}}
+    <span>Type:</span> {{rental-property-type rental.category}}
+      - {{rental.category}}
   </div>
   <div class="detail location">
     <span>Location:</span> {{rental.city}}
@@ -365,23 +376,21 @@ At this point you can do a [deployment](../deploying/) and share your Super Rent
 or you can use this as a base to explore other Ember features and addons.
 Regardless, we hope this has helped you get started with creating your own ambitious applications with Ember!
 
-### Acceptance Tests
+### Application Tests
 
 We want to verify that we can click on a specific rental and load a detailed view to the page.
 We'll click on the title and validate that an expanded description of the rental is shown.
 
-```/tests/acceptance/list-rentals-test.js
-test('should show details for a specific rental', function (assert) {
-  visit('/rentals');
-  click('a:contains("Grand Old Mansion")');
-  andThen(function() {
-    assert.equal(currentURL(), '/rentals/grand-old-mansion', 'should navigate to show route');
-    assert.equal(find('.show-listing h2').text(), "Grand Old Mansion", 'should list rental title');
-    assert.equal(find('.description').length, 1, 'should list a description of the property');
-  });
+```/tests/acceptance/list-rentals-test.js{+2,+3,+4,+5,+6}
+test('should show details for a specific rental', async function(assert) {
+  await visit('/rentals');
+  await click(".grand-old-mansion");
+  assert.equal(currentURL(), '/rentals/grand-old-mansion', "should navigate to show route");
+  assert.ok(this.element.querySelector('.show-listing h2').textContent.includes("Grand Old Mansion"), 'should list rental title');
+  assert.ok(this.element.querySelector('.show-listing .description'), 'should list a description of the property');
 });
 ```
 
-At this point all our tests should pass, including the [list of acceptance tests](../acceptance-test) we created as our beginning requirements.
+At this point all our tests should pass, including the [list of application tests](../acceptance-test) we created as our beginning requirements.
 
-![Acceptance Tests Pass](../../images/subroutes/all-acceptance-pass.png)
+![Application Tests Pass](../../images/subroutes/all-acceptance-pass.png)

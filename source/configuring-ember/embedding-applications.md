@@ -17,7 +17,7 @@ different element by specifying its `rootElement` property:
 …
 
 App = Ember.Application.extend({
-  rootElement: '#app'
+  rootElement: '#app',
   modulePrefix: config.modulePrefix,
   podModulePrefix: config.podModulePrefix,
   Resolver
@@ -48,9 +48,9 @@ module.exports = function(environment) {
     locationType: 'none',
     …
   };
-  
+
   …
-  
+
   return ENV;
 }
 ```
@@ -81,7 +81,7 @@ module.exports = function(environment) {
 You will notice that this is then used to configure your application's router:
 
 ```app/router.js
-import Router from "@ember/routing/router";
+import Router from '@ember/routing/router';
 import config from './config/environment';
 
 const Router = Router.extend({

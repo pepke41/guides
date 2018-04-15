@@ -9,7 +9,7 @@ objects in the following ways:
 
 * `String` is extended to add convenience methods, such as
   `camelize()` and `w()`. You can find a list of these methods with the
-  [Ember.String documentation](https://www.emberjs.com/api/ember/2.16/classes/String).
+  [Ember.String documentation](https://www.emberjs.com/api/ember/release/classes/String).
 
 * `Function` is extended with methods to annotate functions as
   computed properties, via the `property()` method, and as observers,
@@ -69,44 +69,40 @@ native arrays with things like a template's `{{#each}}` helper, Ember.js
 will have no way to detect changes to the array and the template will
 not update as the underlying array changes.
 
-Additionally, if you try to set the model of an
-`Ember.ArrayController` to a plain native array, it will raise an
-exception since it no longer implements the `Ember.Array` interface.
-
 You can manually coerce a native array into an array that implements the
 required interfaces using the convenience method `Ember.A`:
 
 ```javascript
-import { A } from "@ember/array"
+import { A } from '@ember/array';
 
 let islands = ['Oahu', 'Kauai'];
 islands.includes('Oahu');
-//=> TypeError: Object Oahu,Kauai has no method 'includes'
+// => TypeError: Object Oahu,Kauai has no method 'includes'
 
 // Convert `islands` to an array that implements the
 // Ember enumerable and array interfaces
 A(islands);
 
 islands.includes('Oahu');
-//=> true
+// => true
 ```
 
 ### Strings
 
 Strings will no longer have the convenience methods described in the
-[`Ember.String` API reference](https://www.emberjs.com/api/ember/2.16/classes/String).
+[`Ember.String` API reference](https://www.emberjs.com/api/ember/release/classes/String).
 Instead,
 you can use the similarly-named methods of the `Ember.String` object and
 pass the string to use as the first parameter:
 
 ```javascript
-import { camelize } from "@ember/string"
+import { camelize } from '@ember/string';
 
-"my_cool_class".camelize();
-//=> TypeError: Object my_cool_class has no method 'camelize'
+'my_cool_class'.camelize();
+// => TypeError: Object my_cool_class has no method 'camelize'
 
-camelize("my_cool_class");
-//=> "myCoolClass"
+camelize('my_cool_class');
+// => "myCoolClass"
 ```
 
 ### Functions
@@ -120,7 +116,7 @@ To annotate computed properties, use the `Ember.computed()` method to
 wrap the function:
 
 ```javascript
-import { computed } from "@ember/object"
+import { computed } from '@ember/object';
 
 // This won't work:
 fullName: function() {
@@ -137,7 +133,7 @@ fullName: computed('firstName', 'lastName', function() {
 Observers are annotated using `Ember.observer()`:
 
 ```javascript
-import { observer } from "@ember/object"
+import { observer } from '@ember/object';
 
 // This won't work:
 fullNameDidChange: function() {
@@ -151,10 +147,10 @@ fullNameDidChange: observer('fullName', function() {
 })
 ```
 
-Evented functions are annotated using `Ember.on()`:
+Evented functions are annotated using [`Ember.on()`](https://emberjs.com/api/ember/2.15/namespaces/Ember/methods/on?anchor=on):
 
 ```javascript
-import { on } from "@ember/object/evented"
+import { on } from '@ember/object/evented';
 
 // This won't work:
 doStuffWhenInserted: function() {
